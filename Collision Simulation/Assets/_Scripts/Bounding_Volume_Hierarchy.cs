@@ -1,41 +1,29 @@
 using System.Collections.Generic;
 using UnityEngine;
-public class Bounding_Volume_Hierarchy : MonoBehaviour
+public class Bounding_Volume_Hierarchy 
 {
-    public static Bounding_Volume_Hierarchy Instance;
-    public BoxVolume boxVolumeTree;
-    private void Awake()
+    public static void CalculateCollision(CircleProperties[] circlesArray,bool isXAxis)
     {
-        if (Instance == null) Instance = this;
-        else Destroy(this);
-    }
-    public void CalculateCollision(CircleProperties[] circlesArray)
-    {
-        boxVolumeTree = null;
-        boxVolumeTree = CreateBoxVolumeTree(new BoxVolume(circlesArray, null, null, true));
-    }
-    BoxVolume CreateBoxVolumeTree(BoxVolume currentBoxVolume)
-    {
-        int circleArrayLengh = currentBoxVolume.CirclesArray.Length;
+        int circleArrayLengh = circlesArray.Length;
 
-        if (circleArrayLengh <= 1) return currentBoxVolume;
+        if (circleArrayLengh <= 1) return;
 
         List<CircleProperties> RightBoxVolume = new List<CircleProperties>();
         List<CircleProperties> LeftBoxVolume = new List<CircleProperties>();
         int repetition = 0;
-        if (currentBoxVolume.isXAxis)
+        if (isXAxis)
         {
             float SxPositions = 0;
 
             for (int i = 0; i < circleArrayLengh; i++)
             {
-                SxPositions += currentBoxVolume.CirclesArray[i].Position.x;
+                SxPositions += circlesArray[i].Position.x;
             }
             float medxAxis = SxPositions / circleArrayLengh;
 
             for (int i = 0; i < circleArrayLengh; i++)
             {
-                CircleProperties currentCircle = currentBoxVolume.CirclesArray[i];
+                CircleProperties currentCircle = circlesArray[i];
                 //for x Axis
                 if (Mathf.Abs(currentCircle.Position.x - medxAxis) < currentCircle.Radius)
                 {
@@ -53,13 +41,13 @@ public class Bounding_Volume_Hierarchy : MonoBehaviour
 
             for (int i = 0; i < circleArrayLengh; i++)
             {
-                SyPositions += currentBoxVolume.CirclesArray[i].Position.y;
+                SyPositions += circlesArray[i].Position.y;
             }
             float medyAxis = SyPositions / circleArrayLengh;
 
             for (int i = 0; i < circleArrayLengh; i++)
             {
-                CircleProperties currentCircle = currentBoxVolume.CirclesArray[i];
+                CircleProperties currentCircle = circlesArray[i];
                 //for y Axis
                 if (Mathf.Abs(currentCircle.Position.y - medyAxis) < currentCircle.Radius)
                 {
@@ -71,31 +59,13 @@ public class Bounding_Volume_Hierarchy : MonoBehaviour
             }
         }
 
-        //if (RightBoxVolume.Count == circleArrayLengh && LeftBoxVolume.Count == circleArrayLengh) return currentBoxVolume;
         if (RightBoxVolume.Count == circleArrayLengh || LeftBoxVolume.Count == circleArrayLengh)
         {
             if (RightBoxVolume.Count == circleArrayLengh) CollisionSimulationHandler.Instance.CalculateCollisionInAnArray(RightBoxVolume.ToArray());
             else CollisionSimulationHandler.Instance.CalculateCollisionInAnArray(LeftBoxVolume.ToArray());
-            return currentBoxVolume;
+            return;
         }
-        currentBoxVolume.CirclesArray = new CircleProperties[0];
-        currentBoxVolume.Right = CreateBoxVolumeTree(new BoxVolume(RightBoxVolume.ToArray(), null, null, !currentBoxVolume.isXAxis));
-        currentBoxVolume.Left = CreateBoxVolumeTree(new BoxVolume(LeftBoxVolume.ToArray(), null, null, !currentBoxVolume.isXAxis));
-
-        return currentBoxVolume;
-    }
-}
-public class BoxVolume
-{
-    public CircleProperties[] CirclesArray;
-    public BoxVolume Right;
-    public BoxVolume Left;
-    public bool isXAxis;
-    public BoxVolume(CircleProperties[] circlesArray, BoxVolume right, BoxVolume left, bool isXAxis)
-    {
-        CirclesArray = circlesArray;
-        Right = right;
-        Left = left;
-        this.isXAxis = isXAxis;
+        CalculateCollision(RightBoxVolume.ToArray(), !isXAxis);
+        CalculateCollision(LeftBoxVolume.ToArray(), !isXAxis);
     }
 }

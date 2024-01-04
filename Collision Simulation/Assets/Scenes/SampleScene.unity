@@ -134,7 +134,6 @@ GameObject:
   - component: {fileID: 322046705}
   - component: {fileID: 322046704}
   - component: {fileID: 322046703}
-  - component: {fileID: 322046706}
   m_Layer: 0
   m_Name: SimulationHandler
   m_TagString: Untagged
@@ -154,11 +153,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f4e9ad0b0fe6b3a4d88363bdedad21cc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  NCircles: 50000
-  StartVelocity: {x: 5, y: 5}
-  StartAcceleration: {x: 0, y: -9}
-  BorderSize: 2000
-  BorderResistance: 1
+  NCircles: 10000
+  StartVelocity: {x: 100, y: 100}
+  StartAcceleration: {x: 0, y: -100}
+  BorderSize: 500
+  BorderResistance: 0.4
   MinVelocityToFreez: 2
   CirlcePrefab: {fileID: 5712998883434319286, guid: aaadfe7fcd69b274c950810def710d59, type: 3}
   circlesTr: []
@@ -194,18 +193,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &322046706
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 322046702}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 03fd99f3ce9e7a54bbffba93af119eb4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &519420028
 GameObject:
   m_ObjectHideFlags: 0

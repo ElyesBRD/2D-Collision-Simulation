@@ -1,3 +1,4 @@
+using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -63,53 +64,13 @@ public class CollisionSimulationHandler : MonoBehaviour
     }
     void MoveCircles()
     {
-        Bounding_Volume_Hierarchy.Instance.CalculateCollision(Circles);
+        Bounding_Volume_Hierarchy.CalculateCollision(Circles, true);
         for (int i = 0; i < Circles.Length; i++)
         {
-            ContinousWallsCollisionDetection(i);
-            //CollisionWithOtherSpheres(i);
-            Circles[i].Velocity += Circles[i].Acceleration * Time.deltaTime;
-            circlesTr[i].position = Circles[i].Position;
-            //CheckWallsCollision(i);
-        }
-    }
-    public void CollisionWithOtherSpheres(int i)
-    {
-        for (int j = i; j < Circles.Length; j++)
-        {
-            if (i == j) continue;
-            float distanceBetweenTwoPoints = (Circles[i].Position - Circles[j].Position).magnitude;
-            float someOfTwoRadius = Circles[i].Radius + Circles[j].Radius;
-            if (distanceBetweenTwoPoints <= someOfTwoRadius)
-            {
-                if (distanceBetweenTwoPoints < someOfTwoRadius - .1f)
-                {
-                    float xDistance = ((Circles[i].Radius + Circles[j].Radius) - Mathf.Abs((Circles[i].Position.x - Circles[j].Position.x))) / 4;
-                    float yDistance = ((Circles[i].Radius + Circles[j].Radius) - Mathf.Abs((Circles[i].Position.y - Circles[j].Position.y))) / 4;
-
-                    if (Circles[i].Position.x > Circles[j].Position.x)
-                    {
-                        Circles[i].Position.x += xDistance;
-                        Circles[j].Position.x -= xDistance;
-                    }
-                    else
-                    {
-                        Circles[i].Position.x -= xDistance;
-                        Circles[j].Position.x += xDistance;
-                    }
-                    if (Circles[i].Position.y > Circles[j].Position.y)
-                    {
-                        Circles[i].Position.y += yDistance;
-                        Circles[j].Position.y -= yDistance;
-                    }
-                    else
-                    {
-                        Circles[i].Position.y -= yDistance;
-                        Circles[j].Position.y += yDistance;
-                    }
-                }
-                CalculateNewVelocitiesAfterCollision(Circles,i, j);
-            }
+            ContinousWallsCollisionDetection(i); //checks if the current circle passed through walls or not if so calculate the new position
+            Circles[i].Position += Circles[i].Velocity * Time.deltaTime; //calculates the position of the current cirlce
+            Circles[i].Velocity += Circles[i].Acceleration * Time.deltaTime; //calculates the velocity of the current circle
+            circlesTr[i].position = Circles[i].Position; //updates the current circle gameobject in the scene
         }
     }
     public void CalculateCollisionInAnArray(CircleProperties[] Circles)
@@ -193,35 +154,38 @@ public class CollisionSimulationHandler : MonoBehaviour
     }
     void ContinousWallsCollisionDetection(int i)
     {
-        //check up
-        //time = (BorderSize - Circles[i].Radius - (Circles[i].Position.y + Circles[i].Velocity.y * Time.deltaTime)) / (Circles[i].Position.y - (Circles[i].Position.y + Circles[i].Velocity.y * Time.deltaTime));
-        if (Circles[i].Position.y + Circles[i].Velocity.y * Time.deltaTime > BorderSize - Circles[i].Radius)
+        //calculate circle position in the next frame
+        float NextXPos = Circles[i].Position.x + Circles[i].Velocity.x * Time.deltaTime;
+        float NextYPos = Circles[i].Position.y + Circles[i].Velocity.y * Time.deltaTime;
+        //checks if the next position is outside the bounding box or inside
+        //check Up and Bottm
+        if (NextYPos > BorderSize - Circles[i].Radius)
         {
-            //Circles[i].Position.y = LinearCordsDependingOnTimeIntervale(time, Circles[i].Position.y, Circles[i].Position.y + Circles[i].Velocity.y * Time.deltaTime);
-            Circles[i].Position.y = (BorderSize - Circles[i].Radius) - ((Circles[i].Position.y + Circles[i].Velocity.y * Time.deltaTime) - (BorderSize - Circles[i].Radius));
+            Circles[i].Position.y = (BorderSize - Circles[i].Radius) - ((NextYPos) - (BorderSize - Circles[i].Radius));
             if (Circles[i].Velocity.magnitude < MinVelocityToFreez) Circles[i].Velocity = Vector2.zero;
             else Circles[i].Velocity.y *= -1 * BorderResistance;
         }
-        if (Circles[i].Position.y + Circles[i].Velocity.y * Time.deltaTime < -BorderSize + Circles[i].Radius)
+        //check Bottom
+        if (NextYPos < -BorderSize + Circles[i].Radius)
         {
-            Circles[i].Position.y = (-BorderSize + Circles[i].Radius) - ((Circles[i].Position.y + Circles[i].Velocity.y * Time.deltaTime) - (-BorderSize + Circles[i].Radius));
+            Circles[i].Position.y = (-BorderSize + Circles[i].Radius) - ((NextYPos) - (-BorderSize + Circles[i].Radius));
             if (Circles[i].Velocity.magnitude < MinVelocityToFreez) Circles[i].Velocity = Vector2.zero;
             else Circles[i].Velocity.y *= -1 * BorderResistance;
         }
-        if (Circles[i].Position.x + Circles[i].Velocity.x * Time.deltaTime > BorderSize - Circles[i].Radius)
+        //check Right and Left
+        if (NextXPos > BorderSize - Circles[i].Radius)
         {
-            Circles[i].Position.x = (BorderSize - Circles[i].Radius) - ((Circles[i].Position.x + Circles[i].Velocity.x * Time.deltaTime) - (BorderSize - Circles[i].Radius));
+            Circles[i].Position.x = (BorderSize - Circles[i].Radius) - ((NextXPos) - (BorderSize - Circles[i].Radius));
             if (Circles[i].Velocity.magnitude < MinVelocityToFreez) Circles[i].Velocity = Vector2.zero;
             else Circles[i].Velocity.x *= -1 * BorderResistance;
         }
-        if (Circles[i].Position.x + Circles[i].Velocity.x * Time.deltaTime < -BorderSize + Circles[i].Radius)
+        //check Left
+        if (NextXPos < -BorderSize + Circles[i].Radius)
         {
-            Circles[i].Position.x = (-BorderSize + Circles[i].Radius) - ((Circles[i].Position.x + Circles[i].Velocity.x * Time.deltaTime) - (-BorderSize + Circles[i].Radius));
+            Circles[i].Position.x = (-BorderSize + Circles[i].Radius) - ((NextXPos) - (-BorderSize + Circles[i].Radius));
             if (Circles[i].Velocity.magnitude < MinVelocityToFreez) Circles[i].Velocity = Vector2.zero;
             else Circles[i].Velocity.x *= -1 * BorderResistance;
         }
-
-        Circles[i].Position += Circles[i].Velocity * Time.deltaTime;
     }
     #region Old Trash Code
     float LinearCordsDependingOnTimeIntervale(float t, float Cord1, float Cords2) => t * Cords2 + (1 - t) * Cord1;
