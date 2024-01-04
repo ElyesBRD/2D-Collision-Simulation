@@ -1,7 +1,7 @@
 # 2D Collision Simulation
 A unity project that simulates 2D circles moving around and colliding with each other using physics principles.
-For Optimization im using bounding volume hierarchy method.
-Im Trying to implement other multiple solusions for Optimization.
+For Optimization im using bounding volume hierarchy method,
+and im trying to implement other solutions for Optimization in the future.
 
 # How To Use
 After opening the project in unity (Unity 2021.3.16f1 version was created with):
@@ -11,4 +11,4 @@ After opening the project in unity (Unity 2021.3.16f1 version was created with):
 * Start the Scene.
 
 # Note
-The project is still not finished yet, if there is errors please let me know.
+The project is still not finished yet, so consider that errors may apear and if so please let me know.
