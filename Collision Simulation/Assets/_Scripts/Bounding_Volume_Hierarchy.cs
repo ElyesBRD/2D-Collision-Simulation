@@ -10,7 +10,7 @@ public class Bounding_Volume_Hierarchy
 
         List<CircleProperties> RightBoxVolume = new List<CircleProperties>();
         List<CircleProperties> LeftBoxVolume = new List<CircleProperties>();
-        int repetition = 0;
+
         if (isXAxis)
         {
             float SxPositions = 0;
@@ -24,12 +24,10 @@ public class Bounding_Volume_Hierarchy
             for (int i = 0; i < circleArrayLengh; i++)
             {
                 CircleProperties currentCircle = circlesArray[i];
-                //for x Axis
                 if (Mathf.Abs(currentCircle.Position.x - medxAxis) < currentCircle.Radius)
                 {
                     RightBoxVolume.Add(currentCircle);
                     LeftBoxVolume.Add(currentCircle);
-                    repetition++;
                 }
                 else if (currentCircle.Position.x > medxAxis) RightBoxVolume.Add(currentCircle);
                 else if (currentCircle.Position.x < medxAxis) LeftBoxVolume.Add(currentCircle);
@@ -48,7 +46,6 @@ public class Bounding_Volume_Hierarchy
             for (int i = 0; i < circleArrayLengh; i++)
             {
                 CircleProperties currentCircle = circlesArray[i];
-                //for y Axis
                 if (Mathf.Abs(currentCircle.Position.y - medyAxis) < currentCircle.Radius)
                 {
                     RightBoxVolume.Add(currentCircle);

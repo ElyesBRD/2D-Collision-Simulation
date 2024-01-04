@@ -1,25 +1,33 @@
-using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class CollisionSimulationHandler : MonoBehaviour
 {
-    bool startDrawing;
     public static CollisionSimulationHandler Instance;
     public CircleProperties[] Circles;
-    public int NCircles;
-    public Vector2 StartVelocity;
-    public Vector2 StartAcceleration;
-    public float BorderSize;
-    public float BorderResistance = 1 / 2;
-    public float MinVelocityToFreez = 2;
 
+    bool startDrawing; // to draw guizmos (only the border)
+
+    [Tooltip("particles stuff")]
+    public int NCircles; // numver of circles / particles
+    public Vector2 StartVelocity;// set random velocity to all particles
+    public Vector2 StartAcceleration; // set random acceleration to all particles
+    public float RadiusInterval; // an intervale between 0.5 and RadiusInterval , if <= .5 || == 1 ? all the particles gonna have radius = 1 : RadiusInterval
+
+    [Tooltip("border stuff")]
+    public float BorderSize;
+    public float BorderResistance = 1 / 2; //apon collision with a wall decrease the velocity mag by BorderResistance amount 
+    public float MinVelocityToFreez = 2; // if the velocity magnitude of a particle goes below MinVelocityToFreez after collision with a wall set the velocity to 0
+
+    [Tooltip("scene stuff")]
     public GameObject CirlcePrefab;
     public List<Transform> circlesTr;
     public Camera MainCamer;
 
+    [Tooltip("test stuff")]
+    //those r only to play with the simulation nothing else gonna change in the future
     public bool UpdateChanges;
-    public bool updateAcceleration, updateVelocities, updateCameraSize;
+    public bool updateAcceleration, updateVelocities, updateCameraSize, UpdateColors;
     private void Awake()
     {
         if (Instance == null) Instance = this;
@@ -28,41 +36,63 @@ public class CollisionSimulationHandler : MonoBehaviour
     private void Start()
     {
         MainCamer = Camera.main;
-        MainCamer.orthographicSize = BorderSize;
         circlesTr = new List<Transform>();
-        Circles = Spawner.Instance.CreateCircles(NCircles, StartVelocity, StartAcceleration);
+        MainCamer.orthographicSize = BorderSize;
         startDrawing = true;
+
+        if (RadiusInterval <= .5f) RadiusInterval = -1;
+        Circles = Spawner.Instance.CreateCircles(NCircles, StartVelocity, StartAcceleration, RadiusInterval);
+
         for (int i = 0; i < Circles.Length; i++)
         {
             circlesTr.Add(Instantiate(CirlcePrefab, Circles[i].Position, Quaternion.identity, transform).transform);
-            circlesTr[i].localScale = Vector3.one * Circles[i].Radius * 2;
         }
     }
     private void Update()
     {
-        MoveCircles();
+        SimulateCollision();
+        #region extra
+        //these are only for testing and playing with the simulation gonna change in the future
         if (UpdateChanges)
         {
             UpdateChanges = false;
 
             if (updateAcceleration)
             {
-                updateAcceleration= false;
                 UpdateAcceleration();
             }
             if (updateVelocities)
             {
-                updateVelocities = false;
                 UpdateVelocities();
             }
             if (updateCameraSize)
             {
-                updateCameraSize = false;
                 MainCamer.orthographicSize = BorderSize;
             }
         }
+        if (UpdateColors) // just to add some color to the particles
+        {
+            UpdateColors = false;
+            for (int i = 0; i < Circles.Length; i++)
+            {
+                if (i < (Circles.Length) * 1/3)
+                {
+                    circlesTr[i].GetComponent<SpriteRenderer>().color = Color.white;
+                }
+                else if (i > (Circles.Length) * 1 / 3 && i < (Circles.Length) * 2/3)
+                {
+                    circlesTr[i].GetComponent<SpriteRenderer>().color = Color.red;
+                }
+                else
+                {
+                    circlesTr[i].GetComponent<SpriteRenderer>().color = Color.blue;
+                }
+            }
+        }
+        #endregion
     }
-    void MoveCircles()
+    #region Simulation Code
+    void SimulateCollision()
     {
         Bounding_Volume_Hierarchy.CalculateCollision(Circles, true);
         for (int i = 0; i < Circles.Length; i++)
@@ -77,9 +107,8 @@ public class CollisionSimulationHandler : MonoBehaviour
     {
         for (int i = 0; i < Circles.Length; i++)
         {
-            for (int j = i; j < Circles.Length; j++)
+            for (int j = i + 1; j < Circles.Length; j++)
             {
-                if (i == j) continue;
                 float distanceBetweenTwoPoints = (Circles[i].Position - Circles[j].Position).magnitude;
                 float someOfTwoRadius = Circles[i].Radius + Circles[j].Radius;
                 if (distanceBetweenTwoPoints <= someOfTwoRadius)
@@ -109,8 +138,8 @@ public class CollisionSimulationHandler : MonoBehaviour
                             Circles[i].Position.y -= yDistance;
                             Circles[j].Position.y += yDistance;
                         }
+                        CalculateNewVelocitiesAfterCollision(Circles, i, j);
                     }
-                    CalculateNewVelocitiesAfterCollision(Circles,i, j);
                 }
             }
         }
@@ -187,34 +216,13 @@ public class CollisionSimulationHandler : MonoBehaviour
             else Circles[i].Velocity.x *= -1 * BorderResistance;
         }
     }
-    #region Old Trash Code
-    float LinearCordsDependingOnTimeIntervale(float t, float Cord1, float Cords2) => t * Cords2 + (1 - t) * Cord1;
-    void CheckWallsCollision(int i)
-    {
-        if (Circles[i].Position.y <= -BorderSize + Circles[i].Radius || Circles[i].Position.y >= BorderSize - Circles[i].Radius)
-        {
-            Circles[i].Velocity.y = -Circles[i].Velocity.y * BorderResistance;
-        }
-        if (Circles[i].Position.x <= -BorderSize + Circles[i].Radius || Circles[i].Position.x >= BorderSize - Circles[i].Radius)
-        {
-            Circles[i].Velocity.x = -Circles[i].Velocity.x * BorderResistance;
-        }
-    }
     #endregion
+    #region extra
     private void OnDrawGizmos()
     {
         if (!startDrawing) return;
-        //for (int i = 0; i < Circles.Length; i++)
-        //{
-        //    Gizmos.color = Color.white;
-        //    Gizmos.DrawSphere(Circles[i].Position, Circles[i].Radius);
-        //    //Gizmos.color = Color.black;
-        //    //Gizmos.DrawWireCube(Vector2.zero, Vector2.one * ((BorderSize - Circles[i].Radius) * 2));
-        //}
-        Gizmos.color = Color.white;
         Gizmos.DrawWireCube(Vector2.zero, Vector2.one * BorderSize * 2);
     }
-    
     public void UpdateAcceleration()
     {
         for (int i = 0; i < Circles.Length; i++)
@@ -229,4 +237,5 @@ public class CollisionSimulationHandler : MonoBehaviour
             Circles[i].Velocity = new Vector2(UnityEngine.Random.Range(-StartVelocity.x, StartVelocity.x), UnityEngine.Random.Range(-StartVelocity.y, StartVelocity.y));
         }
     }
+    #endregion
 }
