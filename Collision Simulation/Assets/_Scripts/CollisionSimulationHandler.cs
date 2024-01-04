@@ -40,10 +40,6 @@ public class CollisionSimulationHandler : MonoBehaviour
     private void Update()
     {
         MoveCircles();
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            Bounding_Volume_Hierarchy.Instance.CreateBoxVolumeTree(Circles);
-        }
         if (UpdateChanges)
         {
             UpdateChanges = false;
@@ -67,16 +63,17 @@ public class CollisionSimulationHandler : MonoBehaviour
     }
     void MoveCircles()
     {
+        Bounding_Volume_Hierarchy.Instance.CalculateCollision(Circles);
         for (int i = 0; i < Circles.Length; i++)
         {
             ContinousWallsCollisionDetection(i);
-            CollisionWithOtherSpheres(i);
+            //CollisionWithOtherSpheres(i);
             Circles[i].Velocity += Circles[i].Acceleration * Time.deltaTime;
             circlesTr[i].position = Circles[i].Position;
             //CheckWallsCollision(i);
         }
     }
-    void CollisionWithOtherSpheres(int i)
+    public void CollisionWithOtherSpheres(int i)
     {
         for (int j = i; j < Circles.Length; j++)
         {
@@ -111,11 +108,53 @@ public class CollisionSimulationHandler : MonoBehaviour
                         Circles[j].Position.y += yDistance;
                     }
                 }
-                CalculateNewVelocitiesAfterCollision(i, j);
+                CalculateNewVelocitiesAfterCollision(Circles,i, j);
             }
         }
     }
-    void CalculateNewVelocitiesAfterCollision(int i, int j)
+    public void CalculateCollisionInAnArray(CircleProperties[] Circles)
+    {
+        for (int i = 0; i < Circles.Length; i++)
+        {
+            for (int j = i; j < Circles.Length; j++)
+            {
+                if (i == j) continue;
+                float distanceBetweenTwoPoints = (Circles[i].Position - Circles[j].Position).magnitude;
+                float someOfTwoRadius = Circles[i].Radius + Circles[j].Radius;
+                if (distanceBetweenTwoPoints <= someOfTwoRadius)
+                {
+                    if (distanceBetweenTwoPoints < someOfTwoRadius - .1f)
+                    {
+                        float xDistance = ((Circles[i].Radius + Circles[j].Radius) - Mathf.Abs((Circles[i].Position.x - Circles[j].Position.x))) / 4;
+                        float yDistance = ((Circles[i].Radius + Circles[j].Radius) - Mathf.Abs((Circles[i].Position.y - Circles[j].Position.y))) / 4;
+
+                        if (Circles[i].Position.x > Circles[j].Position.x)
+                        {
+                            Circles[i].Position.x += xDistance;
+                            Circles[j].Position.x -= xDistance;
+                        }
+                        else
+                        {
+                            Circles[i].Position.x -= xDistance;
+                            Circles[j].Position.x += xDistance;
+                        }
+                        if (Circles[i].Position.y > Circles[j].Position.y)
+                        {
+                            Circles[i].Position.y += yDistance;
+                            Circles[j].Position.y -= yDistance;
+                        }
+                        else
+                        {
+                            Circles[i].Position.y -= yDistance;
+                            Circles[j].Position.y += yDistance;
+                        }
+                    }
+                    CalculateNewVelocitiesAfterCollision(Circles,i, j);
+                }
+            }
+        }
+    }
+    void CalculateNewVelocitiesAfterCollision(CircleProperties[] Circles ,int i, int j)
     {
         //steps:
         //1

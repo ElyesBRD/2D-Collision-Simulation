@@ -154,11 +154,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f4e9ad0b0fe6b3a4d88363bdedad21cc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  NCircles: 100
-  StartVelocity: {x: 10, y: 10}
-  StartAcceleration: {x: 0, y: 9}
-  BorderSize: 30
-  BorderResistance: 0.7
+  NCircles: 50000
+  StartVelocity: {x: 5, y: 5}
+  StartAcceleration: {x: 0, y: -9}
+  BorderSize: 2000
+  BorderResistance: 1
   MinVelocityToFreez: 2
   CirlcePrefab: {fileID: 5712998883434319286, guid: aaadfe7fcd69b274c950810def710d59, type: 3}
   circlesTr: []
