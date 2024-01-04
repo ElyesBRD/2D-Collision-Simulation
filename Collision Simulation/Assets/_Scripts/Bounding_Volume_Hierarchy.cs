@@ -9,13 +9,10 @@ public class Bounding_Volume_Hierarchy : MonoBehaviour
         if (Instance == null) Instance = this;
         else Destroy(this);
     }
-    public void CreateBoxVolumeTree(CircleProperties[] circlesArray)
+    public void CalculateCollision(CircleProperties[] circlesArray)
     {
         boxVolumeTree = null;
         boxVolumeTree = CreateBoxVolumeTree(new BoxVolume(circlesArray, null, null, true));
-        if (circlesArray.Length > 0) { }
-        //yes
-        Debug.Log(boxVolumeTree);
     }
     BoxVolume CreateBoxVolumeTree(BoxVolume currentBoxVolume)
     {
@@ -77,6 +74,8 @@ public class Bounding_Volume_Hierarchy : MonoBehaviour
         //if (RightBoxVolume.Count == circleArrayLengh && LeftBoxVolume.Count == circleArrayLengh) return currentBoxVolume;
         if (RightBoxVolume.Count == circleArrayLengh || LeftBoxVolume.Count == circleArrayLengh)
         {
+            if (RightBoxVolume.Count == circleArrayLengh) CollisionSimulationHandler.Instance.CalculateCollisionInAnArray(RightBoxVolume.ToArray());
+            else CollisionSimulationHandler.Instance.CalculateCollisionInAnArray(LeftBoxVolume.ToArray());
             return currentBoxVolume;
         }
         currentBoxVolume.CirclesArray = new CircleProperties[0];
