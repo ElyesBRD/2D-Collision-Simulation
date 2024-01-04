@@ -4,7 +4,8 @@ For Optimization im using bounding volume hierarchy method,
 and im trying to implement other solutions for Optimization in the future.
 
 # How much can it handle
-50K particles with a low end pc gives about 2fps, still didnt test it with a good pc, and it depends on the size of the particles u spawn.
+50K particles with a low end pc gives about 2fps, still didnt test it with a powerful pc.
+It depends in the amount of spread/Radius of the particles is.
 
 # How To Use
 After opening the project in unity (Unity 2021.3.16f1 version was created with):
