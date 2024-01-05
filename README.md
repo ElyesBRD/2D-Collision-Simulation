@@ -13,6 +13,12 @@ After opening the project in unity (Unity 2021.3.16f1 version was created with):
 * in the inspector you gonna find a script called "Collision Simulation Handler".
 * there you can Control all the variables you need for the simulation.
 * Start the Scene.
+Or Build Mode:
+* Open the Repo Folder
+* Open File Called: "Collision Simulation"
+* Open File Called: "build"
+* Open: "Collision Simulation.exe"
+* (to close it press Alt + F4, or Alt + Enter and then Close window button
 
 # Note
 The project is still not finished yet, so consider that errors may appear and if so please let me know.
