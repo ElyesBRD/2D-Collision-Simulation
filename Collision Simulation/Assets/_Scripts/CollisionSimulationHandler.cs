@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class CollisionSimulationHandler : MonoBehaviour
@@ -36,8 +37,8 @@ public class CollisionSimulationHandler : MonoBehaviour
     private void Start()
     {
         MainCamer = Camera.main;
-        circlesTr = new List<Transform>();
         MainCamer.orthographicSize = BorderSize;
+        circlesTr = new List<Transform>();
         startDrawing = true;
 
         if (RadiusInterval <= .5f) RadiusInterval = -1;
@@ -46,6 +47,7 @@ public class CollisionSimulationHandler : MonoBehaviour
         for (int i = 0; i < Circles.Length; i++)
         {
             circlesTr.Add(Instantiate(CirlcePrefab, Circles[i].Position, Quaternion.identity, transform).transform);
+            circlesTr[i].localScale *= Circles[i].Radius * 2;
         }
     }
     private void Update()
@@ -235,6 +237,17 @@ public class CollisionSimulationHandler : MonoBehaviour
         for (int i = 0; i < Circles.Length; i++)
         {
             Circles[i].Velocity = new Vector2(UnityEngine.Random.Range(-StartVelocity.x, StartVelocity.x), UnityEngine.Random.Range(-StartVelocity.y, StartVelocity.y));
+        }
+    }
+    public void UpdateParticlesArray(CircleProperties[] newArray)
+    {
+        Circles = new CircleProperties[newArray.Length];
+        Circles = newArray;
+        for (int i = Circles.Length - 1; i < newArray.Length; i++)
+        {
+            circlesTr.Add(Instantiate(CirlcePrefab, Circles[i].Position, Quaternion.identity, transform).transform);
+            circlesTr[i].localScale *= Circles[i].Radius * 2;
+            circlesTr[i].GetComponent<SpriteRenderer>().color = Color.green;
         }
     }
     #endregion
