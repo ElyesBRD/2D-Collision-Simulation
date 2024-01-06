@@ -6,6 +6,12 @@ public class IInterractionScript : MonoBehaviour
     Vector3 ClickedPosition;
     bool isPressingSpawnButton;
     Transform GhostCircle;
+    private void Start()
+    {
+        GhostCircle = Instantiate(CollisionSimulationHandler.Instance.CirlcePrefab, Vector3.zero, Quaternion.identity).transform;
+        GhostCircle.localScale *= 2;
+        GhostCircle.gameObject.SetActive(false);
+    }
     // Update is called once per frame
     void Update()
     {
@@ -13,9 +19,10 @@ public class IInterractionScript : MonoBehaviour
         {
             isPressingSpawnButton = true;
             ClickedPosition = CursorScript.worldPosition;
-            GhostCircle = Instantiate(CollisionSimulationHandler.Instance.CirlcePrefab, ClickedPosition, Quaternion.identity).transform;
+
+            GhostCircle.gameObject.SetActive(true);
+            GhostCircle.position = ClickedPosition;
             GhostCircle.GetComponent<SpriteRenderer>().color = Color.green;
-            GhostCircle.localScale *= 2;
         }
         if (Input.GetButtonUp("Fire1"))
         {
@@ -23,13 +30,12 @@ public class IInterractionScript : MonoBehaviour
             newCirclesArray.Add(new CircleProperties(ClickedPosition, CursorScript.worldPosition - ClickedPosition, CollisionSimulationHandler.Instance.StartAcceleration, 1, 1));
             CollisionSimulationHandler.Instance.UpdateParticlesArray(newCirclesArray.ToArray());
 
-            Destroy(GhostCircle.gameObject);
-            GhostCircle = null;
+            GhostCircle.gameObject.SetActive(false);
 
             isPressingSpawnButton = false;
         }
     }
-    private void OnDrawGizmos()
+    private void OnGUI()
     {
         if (!isPressingSpawnButton) return;
         Debug.DrawLine(CursorScript.worldPosition, ClickedPosition);

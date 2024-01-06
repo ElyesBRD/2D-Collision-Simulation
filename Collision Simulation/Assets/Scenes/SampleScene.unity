@@ -153,11 +153,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f4e9ad0b0fe6b3a4d88363bdedad21cc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  NCircles: 0
+  NCircles: 2
   StartVelocity: {x: 50, y: 50}
   StartAcceleration: {x: 0, y: -100}
-  RadiusInterval: -1
-  BorderSize: 30
+  RadiusInterval: 10
+  BorderSize: 20
   BorderResistance: 0.7
   MinVelocityToFreez: 2
   CirlcePrefab: {fileID: 5712998883434319286, guid: aaadfe7fcd69b274c950810def710d59, type: 3}
