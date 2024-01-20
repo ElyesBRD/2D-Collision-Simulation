@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class CollisionSimulationHandler : MonoBehaviour
@@ -29,6 +28,9 @@ public class CollisionSimulationHandler : MonoBehaviour
     //those r only to play with the simulation nothing else gonna change in the future
     public bool UpdateChanges;
     public bool updateAcceleration, updateVelocities, updateCameraSize, UpdateColors;
+
+    public float test1;
+    public float test2;
     private void Awake()
     {
         if (Instance == null) Instance = this;
@@ -115,33 +117,35 @@ public class CollisionSimulationHandler : MonoBehaviour
                 float someOfTwoRadius = Circles[i].Radius + Circles[j].Radius;
                 if (distanceBetweenTwoPoints <= someOfTwoRadius)
                 {
-                    if (distanceBetweenTwoPoints < someOfTwoRadius - .1f)
+                    if (distanceBetweenTwoPoints < someOfTwoRadius)
                     {
-                        float xDistance = ((Circles[i].Radius + Circles[j].Radius) - Mathf.Abs((Circles[i].Position.x - Circles[j].Position.x))) / 4;
-                        float yDistance = ((Circles[i].Radius + Circles[j].Radius) - Mathf.Abs((Circles[i].Position.y - Circles[j].Position.y))) / 4;
+                        float xDistance = ((Circles[i].Radius + Circles[j].Radius) - Mathf.Abs((Circles[i].Position.x - Circles[j].Position.x)));
+                        float yDistance = ((Circles[i].Radius + Circles[j].Radius) - Mathf.Abs((Circles[i].Position.y - Circles[j].Position.y)));
+                        test1 = xDistance;
+                        test2 = yDistance;
 
                         if (Circles[i].Position.x > Circles[j].Position.x)
                         {
                             Circles[i].Position.x += xDistance;
-                            Circles[j].Position.x -= xDistance;
+                            //Circles[j].Position.x -= xDistance;
                         }
                         else
                         {
                             Circles[i].Position.x -= xDistance;
-                            Circles[j].Position.x += xDistance;
+                            //Circles[j].Position.x += xDistance;
                         }
                         if (Circles[i].Position.y > Circles[j].Position.y)
                         {
                             Circles[i].Position.y += yDistance;
-                            Circles[j].Position.y -= yDistance;
+                            //Circles[j].Position.y -= yDistance;
                         }
                         else
                         {
                             Circles[i].Position.y -= yDistance;
-                            Circles[j].Position.y += yDistance;
+                            //Circles[j].Position.y += yDistance;
                         }
-                        CalculateNewVelocitiesAfterCollision(Circles, i, j);
                     }
+                    CalculateNewVelocitiesAfterCollision(Circles, i, j);
                 }
             }
         }
