@@ -21,4 +21,4 @@ After opening the project in unity (Unity 2021.3.16f1 version was created with):
 * (to close the simulation window: press Alt + F4, or Alt + Enter and then Close window button)
 
 # Note
-The project is still not finished yet, so consider that errors may appear and if so please let me know.
+The prject is finished, but it just needs some UI so you can build it and play with it.
