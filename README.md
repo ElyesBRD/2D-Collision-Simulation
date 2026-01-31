@@ -1,11 +1,11 @@
 # 2D Collision Simulation
-A unity project that simulates 2D circles moving around and colliding with each other using physics principles.
+A unity project that simulates 2D particle (circles) moving around and colliding with each other using neuton's laws.
 For Optimization im using bounding volume hierarchy method,
-and im trying to implement other solutions for Optimization in the future.
+Construction of a BVH typically takes O(n log n) time, while traversal for intersection tests is O(log n) in balanced scenarios, though O(n) in worst-case. 
 
 # How much can it handle
-5K+ particles with a low end pc gives about 2fps, still didnt test it with a powerful pc.
-It depends in the amount of spread/Radius of the particles.
+5K+ particles with a low end pc, gives about 2fps, still havnt test it with a more powerful pc.
+It depends on the amount of spread/Radius of the particles.
 
 # How To Use
 After opening the project in unity (Unity 2021.3.16f1 version was created with):
