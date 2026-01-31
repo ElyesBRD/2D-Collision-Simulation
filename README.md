@@ -3,10 +3,6 @@ A unity project that simulates 2D particle (circles) moving around and colliding
 For Optimization im using bounding volume hierarchy method,
 Construction of a BVH typically takes O(n log n) time, while traversal for intersection tests is O(log n) in balanced scenarios, though O(n) in worst-case. 
 
-# How much can it handle
-5K+ particles with a low end pc, gives about 2fps, still havnt test it with a more powerful pc.
-It depends on the amount of spread/Radius of the particles.
-
 # How To Use
 After opening the project in unity (Unity 2021.3.16f1 version was created with):
 * Select "SimulationHandler" in the Hierarchy.
